@@ -1,8 +1,14 @@
 const path = require('path');
+console.log("Starting Root Server...");
 
-// Change the current working directory to 'backend-node'
-// This ensures that relative paths like 'public/admin' inside backend-node/server.js work correctly.
-process.chdir(path.join(__dirname, 'backend-node'));
+try {
+    const backendPath = path.join(__dirname, 'backend-node');
+    console.log("Changing directory to:", backendPath);
+    process.chdir(backendPath);
 
-// Load the actual server file
-require('./server.js');
+    console.log("Loading backend-node/server.js...");
+    require('./server.js');
+} catch (err) {
+    console.error("SERVER CRASH ERROR:", err);
+    process.exit(1);
+}

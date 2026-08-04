@@ -1,11 +1,9 @@
 {
   "name": "solo11come-root",
   "version": "1.0.0",
-  "engines": {
-    "node": ">=14.0.0"
-  },
   "scripts": {
-    "build": "cd backend-node && npm install",
+    "install-all": "npm install && cd backend-node && npm install",
+    "build": "npm run install-all",
     "start": "node server.js"
   },
   "dependencies": {
