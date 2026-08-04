@@ -19,18 +19,17 @@ try {
     console.log("Current Working Directory:", process.cwd());
     console.log("Target Backend Path:", backendPath);
 
+    // Change directory so that the backend can find its 'public' folder etc.
     process.chdir(backendPath);
     console.log("New Working Directory:", process.cwd());
 
-    if (!process.env.MONGO_URI) {
-        console.log("WARNING: MONGO_URI is missing from process.env");
-    }
-
     console.log("Attempting to load backend-node/server.js...");
-    require('./server.js');
-    console.log("backend-node/server.js loaded successfully. Waiting for server to start...");
+    // IMPORTANT: require uses paths relative to this file, not process.cwd()
+    require('./backend-node/server.js');
+    console.log("backend-node/server.js execution finished.");
 } catch (err) {
-    console.error("!!! FAILED TO REQUIRE SERVER.JS !!!");
-    console.error(err.stack);
+    console.error("!!! FAILED TO REQUIRE BACKEND SERVER.JS !!!");
+    console.error("Error Message:", err.message);
+    console.error("Stack Trace:", err.stack);
     process.exit(1);
 }
