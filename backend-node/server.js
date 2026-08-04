@@ -6,7 +6,9 @@ const axios = require('axios'); // Added axios
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000; // Render uses 10000 often, but process.env.PORT is priority
+
+console.log("Server starting on Port:", PORT);
 
 // Middleware
 app.use(cors());
@@ -14,9 +16,14 @@ app.use(bodyParser.json());
 
 // MongoDB Connection
 const mongoURI = process.env.MONGO_URI;
-mongoose.connect(mongoURI)
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.log('MongoDB connection error:', err));
+if (!mongoURI) {
+    console.error("CRITICAL ERROR: MONGO_URI is not defined in Environment Variables!");
+} else {
+    console.log("Connecting to MongoDB...");
+    mongoose.connect(mongoURI)
+        .then(() => console.log('MongoDB Connected Successfully'))
+        .catch(err => console.error('MongoDB connection error:', err));
+}
 
 // Models (Added Contest Schema for Admin)
 const UserSchema = new mongoose.Schema({
@@ -524,6 +531,9 @@ setInterval(async () => {
     }
 }, 600000);
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+console.log("Setting up listener on port", PORT, "...");
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`SUCCESS: Server is actually running and listening on port ${PORT}`);
+}).on('error', (err) => {
+    console.error("SERVER LISTEN ERROR:", err);
 });
