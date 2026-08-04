@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:gravity="center_horizontal"
+    android:background="#FFFFFF">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="KYC Verification"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#D32F2F"
+        android:layout_marginBottom="30dp"/>
+
+    <EditText
+        android:id="@+id/etPan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter 10-digit PAN Number"
+        android:inputType="textCapCharacters"
+        android:maxLength="10"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etAadhar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter 12-digit Aadhar Number"
+        android:inputType="number"
+        android:maxLength="12"
+        android:layout_marginBottom="30dp"/>
+
+    <Button
+        android:id="@+id/btnSubmitKYC"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit for Verification"
+        android:backgroundTint="#D32F2F"
+        android:textColor="#FFFFFF"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Verification may take up to 24-48 hours."
+        android:textSize="12sp"
+        android:textColor="#757575"
+        android:layout_marginTop="20dp"/>
+
+</LinearLayout>

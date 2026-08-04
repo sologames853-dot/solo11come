@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#2E7D32"> <!-- Grass Green -->
+
+    <!-- Simple Pitch Representation -->
+    <View
+        android:layout_width="100dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:background="#A1887F"/> <!-- Dirt Brown -->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Team Preview (Pitch View)"
+        android:textColor="#FFFFFF"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <!-- Placeholder for Player bubbles -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Players will be displayed here\nin their respective positions"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:layout_gravity="center"/>
+
+    <Button
+        android:id="@+id/btnClosePreview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CLOSE"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="30dp"/>
+
+</FrameLayout>
