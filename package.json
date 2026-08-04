@@ -1,0 +1,8 @@
+{
+  "name": "solo11come-root",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cd backend-node && npm install",
+    "start": "cd backend-node && node server.js"
+  }
+}
