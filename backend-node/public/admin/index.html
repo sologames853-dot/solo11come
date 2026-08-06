@@ -306,7 +306,10 @@
             tbody.innerHTML = matches.map(m => `
                 <tr class="border-b border-gray-700 hover:bg-gray-750">
                     <td class="px-6 py-4 text-xs">${m.id}</td>
-                    <td class="px-6 py-4 font-bold">${m.name}</td>
+                    <td class="px-6 py-4 font-bold">
+                        ${m.name}<br>
+                        <span class="text-[10px] text-gray-400">${m.date || ''}</span>
+                    </td>
                     <td class="px-6 py-4 text-xs">${m.status}</td>
                     <td class="px-6 py-4">
                         <span class="${m.active ? 'text-green-500' : 'text-red-500'} font-bold">

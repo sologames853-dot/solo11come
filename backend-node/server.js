@@ -132,10 +132,30 @@ app.get('/admin/contests-list', async (req, res) => {
 // Sync Matches from External API
 app.post('/admin/sync-matches', async (req, res) => {
     try {
-        const response = await axios.get(`https://api.cricapi.com/v1/currentMatches?apikey=${process.env.CRICKET_API_KEY || '5f93b276-c5ab-455c-8dd2-198904909842'}&offset=0`);
-        const matches = response.data.data;
+        const apiKey = process.env.CRICKET_API_KEY || '5f93b276-c5ab-455c-8dd2-198904909842';
+        console.log("Admin Syncing Matches...");
 
-        for (let m of matches) {
+        // 1. Fetch Live/Recent Matches
+        const liveRes = await axios.get(`https://api.cricapi.com/v1/currentMatches?apikey=${apiKey}&offset=0`);
+        const liveMatches = liveRes.data.data || [];
+
+        // 2. Fetch Upcoming Matches (Fixtures)
+        const upcomingRes = await axios.get(`https://api.cricapi.com/v1/matches?apikey=${apiKey}&offset=0`);
+        const upcomingMatches = upcomingRes.data.data || [];
+
+        // Combine both
+        const allMatches = [...liveMatches, ...upcomingMatches];
+
+        let count = 0;
+        const processedIds = new Set();
+
+        for (let m of allMatches) {
+            if (!m.id || processedIds.has(m.id)) continue;
+            processedIds.add(m.id);
+
+            // Filter out very old matches if they have "result" status and are not recent
+            // But for now, let's sync all and let admin control visibility
+
             await Match.findOneAndUpdate(
                 { id: m.id },
                 {
@@ -143,14 +163,18 @@ app.post('/admin/sync-matches', async (req, res) => {
                     status: m.status,
                     venue: m.venue,
                     date: m.date,
-                    teamInfo: m.teamInfo,
+                    teamInfo: m.teamInfo || [],
                 },
                 { upsert: true }
             );
+            count++;
         }
-        res.json({ status: 'success', message: 'Matches Synced' });
+
+        console.log(`Sync Completed. Processed ${count} matches.`);
+        res.json({ status: 'success', message: `Successfully synced ${count} matches from Live and Upcoming feeds.` });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Sync Error:", err.message);
+        res.status(500).json({ status: 'error', error: err.message });
     }
 });
 
@@ -295,42 +319,14 @@ app.post('/updateWallet', async (req, res) => {
     }
 });
 
-// 5. Fetch Matches from CricAPI and Sync
+// 5. Fetch Matches for App (Serving from DB for performance and control)
 app.get('/api/matches', async (req, res) => {
     try {
-        const apiKey = process.env.CRICKET_API_KEY || '5f93b276-c5ab-455c-8dd2-198904909842';
-
-        // Fetch fresh data from CricAPI
-        const response = await axios.get(`https://api.cricapi.com/v1/currentMatches?apikey=${apiKey}&offset=0`);
-        const liveMatches = response.data.data;
-
-        if (liveMatches && liveMatches.length > 0) {
-            for (let m of liveMatches) {
-                // Upsert into our DB to keep it updated
-                await Match.findOneAndUpdate(
-                    { id: m.id },
-                    {
-                        name: m.name,
-                        status: m.status,
-                        venue: m.venue,
-                        date: m.date,
-                        teamInfo: m.teamInfo,
-                        // Ensure it's active if it's a new live match
-                        $setOnInsert: { active: true }
-                    },
-                    { upsert: true, new: true }
-                );
-            }
-        }
-
-        // Now return matches from DB that are marked as active
-        const matches = await Match.find({ active: true });
+        // Return active matches, sorted by date (newest first)
+        const matches = await Match.find({ active: true }).sort({ date: -1 }).limit(50);
         res.json({ status: 'success', data: matches });
     } catch (err) {
-        console.error("Error fetching live matches:", err.message);
-        // Fallback to what we have in DB
-        const matches = await Match.find({ active: true });
-        res.json({ status: 'success', data: matches });
+        res.status(500).json({ status: 'error', message: err.message });
     }
 });
 
