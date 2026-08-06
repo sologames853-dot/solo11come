@@ -298,12 +298,39 @@ app.post('/updateWallet', async (req, res) => {
 // 5. Fetch Matches from CricAPI and Sync
 app.get('/api/matches', async (req, res) => {
     try {
-        // Here you would normally fetch from CricAPI using https or axios
-        // For now, let's return matches from our DB
+        const apiKey = process.env.CRICKET_API_KEY || '5f93b276-c5ab-455c-8dd2-198904909842';
+
+        // Fetch fresh data from CricAPI
+        const response = await axios.get(`https://api.cricapi.com/v1/currentMatches?apikey=${apiKey}&offset=0`);
+        const liveMatches = response.data.data;
+
+        if (liveMatches && liveMatches.length > 0) {
+            for (let m of liveMatches) {
+                // Upsert into our DB to keep it updated
+                await Match.findOneAndUpdate(
+                    { id: m.id },
+                    {
+                        name: m.name,
+                        status: m.status,
+                        venue: m.venue,
+                        date: m.date,
+                        teamInfo: m.teamInfo,
+                        // Ensure it's active if it's a new live match
+                        $setOnInsert: { active: true }
+                    },
+                    { upsert: true, new: true }
+                );
+            }
+        }
+
+        // Now return matches from DB that are marked as active
         const matches = await Match.find({ active: true });
         res.json({ status: 'success', data: matches });
     } catch (err) {
-        res.status(500).json({ status: 'error', message: err.message });
+        console.error("Error fetching live matches:", err.message);
+        // Fallback to what we have in DB
+        const matches = await Match.find({ active: true });
+        res.json({ status: 'success', data: matches });
     }
 });
 

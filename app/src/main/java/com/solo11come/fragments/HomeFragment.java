@@ -129,7 +129,7 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
                                     m.setId(cm.getId());
                                     m.setName(cm.getName());
                                     m.setStatus(cm.getStatus());
-                                    m.setScore(cm.getStatus()); // Using status as score summary
+                                    m.setScore(cm.getStatus()); // Using status as score summary for now
 
                                     if (cm.getTeamInfo() != null && cm.getTeamInfo().size() >= 2) {
                                         m.setTeam1(cm.getTeamInfo().get(0).getShortname());
@@ -140,7 +140,7 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
                                         m.setTeam1("T1");
                                         m.setTeam2("T2");
                                     }
-                                    m.setMatchTime(cm.getStatus());
+                                    m.setMatchTime(cm.getDate() != null ? cm.getDate() : cm.getStatus());
                                     matchList.add(m);
                                 }
                                 adapter.notifyDataSetChanged();
