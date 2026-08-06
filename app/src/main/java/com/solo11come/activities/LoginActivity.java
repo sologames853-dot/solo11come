@@ -56,13 +56,13 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(SubscriptionResponse response) {
                     Log.d("API_SUCCESS", "Subscription ID: " + response.getId());
-                    runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Reachability Active!", Toast.LENGTH_SHORT).show());
                 }
 
                 @Override
                 public void onError(String message) {
-                    Log.e("API_ERROR", "Error: " + message);
-                    runOnUiThread(() -> Toast.makeText(LoginActivity.this, "API Error: " + message, Toast.LENGTH_LONG).show());
+                    Log.e("API_ERROR", "Optional API Failed: " + message);
+                    // We don't show a toast here to avoid confusing the user 
+                    // since this is an optional network check feature.
                 }
             });
 
