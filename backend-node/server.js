@@ -162,7 +162,7 @@ app.post('/admin/sync-matches', async (req, res) => {
                     name: m.name,
                     status: m.status,
                     venue: m.venue,
-                    date: m.date,
+                    date: m.dateTimeGMT || m.date,
                     teamInfo: m.teamInfo || [],
                 },
                 { upsert: true }

@@ -34,11 +34,13 @@ import retrofit2.Response;
 public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickListener {
     private RecyclerView rvMatches;
     private MatchAdapter adapter;
-    private List<Match> matchList;
+    private List<Match> fullMatchList = new ArrayList<>();
+    private List<Match> filteredList = new ArrayList<>();
     private ImageButton btnHelp, btnLeaderboard;
     private TextView tvAdminAlert, tvEmpty;
     private android.widget.ProgressBar progressBar;
     private android.widget.Button btnRetry;
+    private com.google.android.material.tabs.TabLayout tabLayout;
 
     @Nullable
     @Override
@@ -52,12 +54,25 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
         tvEmpty = view.findViewById(R.id.tvEmpty);
         progressBar = view.findViewById(R.id.progressBar);
         btnRetry = view.findViewById(R.id.btnRetry);
+        tabLayout = view.findViewById(R.id.tabLayout);
 
         rvMatches.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        matchList = new ArrayList<>();
-        adapter = new MatchAdapter(matchList, this);
+        adapter = new MatchAdapter(filteredList, this);
         rvMatches.setAdapter(adapter);
+
+        tabLayout.addOnTabSelectedListener(new com.google.android.material.tabs.TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(com.google.android.material.tabs.TabLayout.Tab tab) {
+                filterMatches(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(com.google.android.material.tabs.TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(com.google.android.material.tabs.TabLayout.Tab tab) {}
+        });
 
         btnHelp.setOnClickListener(v -> {
             startActivity(new Intent(getContext(), HelpdeskActivity.class));
@@ -73,6 +88,42 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
         fetchMatches();
 
         return view;
+    }
+
+    private void filterMatches(int position) {
+        filteredList.clear();
+        String targetStatus;
+        if (position == 0) {
+            // Upcoming
+            for (Match m : fullMatchList) {
+                if (!"started".equalsIgnoreCase(m.getStatus()) && !"result".equalsIgnoreCase(m.getStatus())) {
+                    filteredList.add(m);
+                }
+            }
+        } else if (position == 1) {
+            // Live
+            for (Match m : fullMatchList) {
+                if ("started".equalsIgnoreCase(m.getStatus())) {
+                    filteredList.add(m);
+                }
+            }
+        } else {
+            // Completed
+            for (Match m : fullMatchList) {
+                if ("result".equalsIgnoreCase(m.getStatus())) {
+                    filteredList.add(m);
+                }
+            }
+        }
+        
+        adapter.notifyDataSetChanged();
+        
+        if (filteredList.isEmpty()) {
+            tvEmpty.setVisibility(View.VISIBLE);
+            tvEmpty.setText("No matches in this category");
+        } else {
+            tvEmpty.setVisibility(View.GONE);
+        }
     }
 
     private void checkUserStatus() {
@@ -122,14 +173,23 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
                         if (response.isSuccessful() && response.body() != null) {
                             CricketMatchResponse matchResponse = response.body();
                             List<CricketMatch> cricketMatches = matchResponse.getData();
-                            matchList.clear();
+                            fullMatchList.clear();
                             if (cricketMatches != null && !cricketMatches.isEmpty()) {
                                 for (CricketMatch cm : cricketMatches) {
                                     Match m = new Match();
                                     m.setId(cm.getId());
                                     m.setName(cm.getName());
-                                    m.setStatus(cm.getStatus());
-                                    m.setScore(cm.getStatus()); // Using status as score summary for now
+                                    
+                                    // Map API booleans to our status
+                                    if (cm.isMatchEnded()) {
+                                        m.setStatus("result");
+                                    } else if (cm.isMatchStarted()) {
+                                        m.setStatus("started");
+                                    } else {
+                                        m.setStatus("upcoming");
+                                    }
+
+                                    m.setScore(cm.getStatus()); 
 
                                     if (cm.getTeamInfo() != null && cm.getTeamInfo().size() >= 2) {
                                         m.setTeam1(cm.getTeamInfo().get(0).getShortname());
@@ -140,14 +200,14 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
                                         m.setTeam1("T1");
                                         m.setTeam2("T2");
                                     }
-                                    m.setMatchTime(cm.getDate() != null ? cm.getDate() : cm.getStatus());
-                                    matchList.add(m);
+                                    m.setMatchTime(cm.getDateTimeGMT() != null ? cm.getDateTimeGMT() : cm.getDate());
+                                    fullMatchList.add(m);
                                 }
-                                adapter.notifyDataSetChanged();
+                                filterMatches(tabLayout.getSelectedTabPosition());
                             } else {
                                 tvEmpty.setVisibility(View.VISIBLE);
                                 btnRetry.setVisibility(View.VISIBLE);
-                                tvEmpty.setText("No upcoming matches at the moment.");
+                                tvEmpty.setText("No matches available.");
                             }
                         } else {
                             if (getContext() != null) {

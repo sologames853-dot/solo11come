@@ -16,8 +16,14 @@ public class CricketMatch {
     private String venue;
     @SerializedName("date")
     private String date;
+    @SerializedName("dateTimeGMT")
+    private String dateTimeGMT;
     @SerializedName("teamInfo")
     private List<TeamInfo> teamInfo;
+    
+    public String getDateTimeGMT() { return dateTimeGMT; }
+    public boolean isMatchStarted() { return matchStarted; }
+    public boolean isMatchEnded() { return matchEnded; }
     @SerializedName("matchStarted")
     private boolean matchStarted;
     @SerializedName("matchEnded")

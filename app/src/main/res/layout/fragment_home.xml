@@ -56,17 +56,32 @@
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/topBar"/>
 
-    <TextView
-        android:id="@+id/sectionTitle"
-        android:layout_width="wrap_content"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Upcoming Matches"
-        android:textColor="#424242"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:layout_margin="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvAdminAlert"/>
+        android:background="#FFFFFF"
+        app:tabIndicatorColor="#D32F2F"
+        app:tabSelectedTextColor="#D32F2F"
+        app:tabTextColor="#757575"
+        app:tabMode="fixed"
+        app:layout_constraintTop_toBottomOf="@id/tvAdminAlert">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upcoming" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Live" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Completed" />
+    </com.google.android.material.tabs.TabLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMatches"
@@ -75,7 +90,7 @@
         android:clipToPadding="false"
         android:paddingBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sectionTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tabLayout" />
 
     <ProgressBar
         android:id="@+id/progressBar"

@@ -11,8 +11,16 @@ public class Match {
     private String name;
     private String status;
     private String score;
+    private boolean matchStarted;
+    private boolean matchEnded;
 
     public Match() {}
+
+    public boolean isMatchStarted() { return matchStarted; }
+    public void setMatchStarted(boolean matchStarted) { this.matchStarted = matchStarted; }
+
+    public boolean isMatchEnded() { return matchEnded; }
+    public void setMatchEnded(boolean matchEnded) { this.matchEnded = matchEnded; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
