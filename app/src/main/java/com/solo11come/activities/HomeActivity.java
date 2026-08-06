@@ -9,6 +9,10 @@ import com.solo11come.R;
 import android.view.Menu;
 import android.view.MenuItem;
 import androidx.appcompat.widget.Toolbar;
+import com.solo11come.activities.WalletActivity;
+import com.solo11come.activities.MyContestsActivity;
+import com.solo11come.activities.HelpdeskActivity;
+import com.solo11come.activities.KYCActivity;
 import com.solo11come.fragments.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

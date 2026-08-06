@@ -11,6 +11,11 @@ import com.solo11come.models.UserContestResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.solo11come.api.ApiClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MyContestsActivity extends AppCompatActivity {
     private RecyclerView rv;
     private MyContestAdapter adapter;
@@ -30,6 +35,25 @@ public class MyContestsActivity extends AppCompatActivity {
     }
 
     private void fetchMyContests() {
-        // API Call Removed
+        String userId = getSharedPreferences("Solo11", MODE_PRIVATE).getString("userId", "");
+        if (userId.isEmpty()) return;
+
+        ApiClient.getInterface().getMyContests(userId).enqueue(new Callback<UserContestResponse>() {
+            @Override
+            public void onResponse(Call<UserContestResponse> call, Response<UserContestResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    list.clear();
+                    if (response.body().getData() != null) {
+                        list.addAll(response.body().getData());
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserContestResponse> call, Throwable t) {
+                Toast.makeText(MyContestsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
