@@ -9,6 +9,12 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface CricketApiInterface {
+    @GET("matches")
+    Call<com.solo11come.models.CricketMatchResponse> getMatches(
+            @Query("apikey") String apiKey,
+            @Query("offset") int offset
+    );
+
     @GET("match_info")
     Call<CricketMatchInfoResponse> getMatchInfo(
             @Query("apikey") String apiKey,

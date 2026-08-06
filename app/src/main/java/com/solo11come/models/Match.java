@@ -13,8 +13,16 @@ public class Match {
     private String score;
     private boolean matchStarted;
     private boolean matchEnded;
+    private boolean hasSquad;
+    private boolean fantasyEnabled;
 
     public Match() {}
+
+    public boolean isHasSquad() { return hasSquad; }
+    public void setHasSquad(boolean hasSquad) { this.hasSquad = hasSquad; }
+
+    public boolean isFantasyEnabled() { return fantasyEnabled; }
+    public void setFantasyEnabled(boolean fantasyEnabled) { this.fantasyEnabled = fantasyEnabled; }
 
     public boolean isMatchStarted() { return matchStarted; }
     public void setMatchStarted(boolean matchStarted) { this.matchStarted = matchStarted; }

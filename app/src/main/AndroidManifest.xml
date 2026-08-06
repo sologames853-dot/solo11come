@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.solo11come"
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -25,7 +26,7 @@
         android:theme="@style/Theme.Solo11come">
 
         <activity
-            android:name=".activities.SplashActivity"
+            android:name="com.solo11come.activities.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
@@ -34,21 +35,21 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.LoginActivity" />
-        <activity android:name=".activities.HomeActivity"
+        <activity android:name="com.solo11come.activities.LoginActivity" />
+        <activity android:name="com.solo11come.activities.HomeActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name=".activities.ContestActivity"
+        <activity android:name="com.solo11come.activities.ContestActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name=".activities.MatchDetailsActivity" />
-        <activity android:name=".activities.TeamSelectionActivity"
+        <activity android:name="com.solo11come.activities.MatchDetailsActivity" />
+        <activity android:name="com.solo11come.activities.TeamSelectionActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name=".activities.CaptainSelectionActivity" />
-        <activity android:name=".activities.WalletActivity"
+        <activity android:name="com.solo11come.activities.CaptainSelectionActivity" />
+        <activity android:name="com.solo11come.activities.WalletActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name=".activities.LeaderboardActivity" />
-        <activity android:name=".activities.HelpdeskActivity" />
-        <activity android:name=".activities.MyContestsActivity" />
-        <activity android:name=".activities.KYCActivity" />
+        <activity android:name="com.solo11come.activities.LeaderboardActivity" />
+        <activity android:name="com.solo11come.activities.HelpdeskActivity" />
+        <activity android:name="com.solo11come.activities.MyContestsActivity" />
+        <activity android:name="com.solo11come.activities.KYCActivity" />
 
     </application>
 

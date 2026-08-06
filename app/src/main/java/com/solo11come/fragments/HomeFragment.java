@@ -161,6 +161,10 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
                             Match m = new Match();
                             m.setId(cm.getId());
                             m.setName(cm.getName());
+                            m.setMatchStarted(cm.isMatchStarted());
+                            m.setMatchEnded(cm.isMatchEnded());
+                            m.setHasSquad(cm.isHasSquad());
+                            m.setFantasyEnabled(cm.isFantasyEnabled());
                             m.setStatus(cm.isMatchEnded() ? "result" : (cm.isMatchStarted() ? "started" : "upcoming"));
                             
                             // Better Score Display

@@ -55,10 +55,15 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
             holder.tvPlayingStatus.setVisibility(View.GONE);
         }
 
-        Glide.with(holder.itemView.getContext())
-                .load(player.getImage())
-                .placeholder(R.drawable.ic_launcher_background)
-                .into(holder.ivPlayer);
+        if (player.getImage() != null && !player.getImage().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(player.getImage())
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .error(R.drawable.ic_launcher_background)
+                    .into(holder.ivPlayer);
+        } else {
+            holder.ivPlayer.setImageResource(R.drawable.ic_launcher_background);
+        }
 
         if (selectedPlayers.contains(player)) {
             holder.itemView.setBackgroundColor(Color.parseColor("#E8F5E9")); // Light green for selected

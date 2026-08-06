@@ -18,8 +18,18 @@ public class CricketMatch {
     private String date;
     @SerializedName("dateTimeGMT")
     private String dateTimeGMT;
+    @SerializedName("teams")
+    private List<String> teams;
     @SerializedName("teamInfo")
     private List<TeamInfo> teamInfo;
+    @SerializedName("series_id")
+    private String seriesId;
+    @SerializedName("fantasyEnabled")
+    private boolean fantasyEnabled;
+    @SerializedName("bbbEnabled")
+    private boolean bbbEnabled;
+    @SerializedName("hasSquad")
+    private boolean hasSquad;
     @SerializedName("matchStarted")
     private boolean matchStarted;
     @SerializedName("matchEnded")
@@ -35,14 +45,20 @@ public class CricketMatch {
 
     public String getId() { return id; }
     public String getName() { return name; }
+    public String getMatchType() { return matchType; }
     public String getStatus() { return status; }
-    public List<TeamInfo> getTeamInfo() { return teamInfo; }
+    public String getVenue() { return venue; }
     public String getDate() { return date; }
     public String getDateTimeGMT() { return dateTimeGMT; }
+    public List<String> getTeams() { return teams; }
+    public List<TeamInfo> getTeamInfo() { return teamInfo; }
+    public String getSeriesId() { return seriesId; }
+    public boolean isFantasyEnabled() { return fantasyEnabled; }
+    public boolean isBbbEnabled() { return bbbEnabled; }
+    public boolean isHasSquad() { return hasSquad; }
     public boolean isMatchStarted() { return matchStarted; }
     public boolean isMatchEnded() { return matchEnded; }
     public List<ScoreSummary> getScore() { return score; }
-    public String getVenue() { return venue; }
     public String getTossWinner() { return tossWinner; }
     public String getTossChoice() { return tossChoice; }
     public List<ScorecardInning> getScorecard() { return scorecard; }
