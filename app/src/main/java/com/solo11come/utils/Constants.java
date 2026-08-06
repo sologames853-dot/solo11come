@@ -9,7 +9,7 @@ public class Constants {
 
     // Cricket Data API (cricapi.com)
     public static final String CRICKET_API_URL = "https://api.cricapi.com/v1/";
-    public static final String CRICKET_API_KEY = "a4e485dc-e9f3-4537-8095-519e69763ac2";
+    public static final String CRICKET_API_KEY = "5f93b276-c5ab-455c-8dd2-198904909842";
 
     // MongoDB Data API (Optional - Backend is primary)
     public static final String MONGO_DATA_API_URL = "https://data.mongodb-api.com/app/data-vvixh/endpoint/data/v1/";
