@@ -38,6 +38,7 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
     private ImageButton btnHelp, btnLeaderboard;
     private TextView tvAdminAlert, tvEmpty;
     private android.widget.ProgressBar progressBar;
+    private android.widget.Button btnRetry;
 
     @Nullable
     @Override
@@ -50,6 +51,7 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
         tvAdminAlert = view.findViewById(R.id.tvAdminAlert);
         tvEmpty = view.findViewById(R.id.tvEmpty);
         progressBar = view.findViewById(R.id.progressBar);
+        btnRetry = view.findViewById(R.id.btnRetry);
 
         rvMatches.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -64,6 +66,8 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
         btnLeaderboard.setOnClickListener(v -> {
             startActivity(new Intent(getContext(), LeaderboardActivity.class));
         });
+
+        btnRetry.setOnClickListener(v -> fetchMatches());
 
         checkUserStatus();
         fetchMatches();
@@ -98,8 +102,17 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
     }
 
     private void fetchMatches() {
+        if (getContext() == null || !com.solo11come.utils.NetworkUtils.isNetworkAvailable(getContext())) {
+            progressBar.setVisibility(View.GONE);
+            tvEmpty.setVisibility(View.VISIBLE);
+            btnRetry.setVisibility(View.VISIBLE);
+            tvEmpty.setText("No internet connection. Please check your network.");
+            return;
+        }
+
         progressBar.setVisibility(View.VISIBLE);
         tvEmpty.setVisibility(View.GONE);
+        btnRetry.setVisibility(View.GONE);
 
         ApiClient.getInterface().getBackendMatches()
                 .enqueue(new Callback<CricketMatchResponse>() {
@@ -116,8 +129,7 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
                                     m.setId(cm.getId());
                                     m.setName(cm.getName());
                                     m.setStatus(cm.getStatus());
-                                    // Set score if available from API (CricAPI data structure)
-                                    // m.setScore(cm.getScore()); 
+                                    m.setScore(cm.getStatus()); // Using status as score summary
 
                                     if (cm.getTeamInfo() != null && cm.getTeamInfo().size() >= 2) {
                                         m.setTeam1(cm.getTeamInfo().get(0).getShortname());
@@ -134,12 +146,15 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
                                 adapter.notifyDataSetChanged();
                             } else {
                                 tvEmpty.setVisibility(View.VISIBLE);
+                                btnRetry.setVisibility(View.VISIBLE);
+                                tvEmpty.setText("No upcoming matches at the moment.");
                             }
                         } else {
                             if (getContext() != null) {
                                 Toast.makeText(getContext(), "Failed to load matches", Toast.LENGTH_SHORT).show();
                             }
                             tvEmpty.setVisibility(View.VISIBLE);
+                            btnRetry.setVisibility(View.VISIBLE);
                             tvEmpty.setText("Failed to load matches");
                         }
                     }
@@ -148,6 +163,7 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
                     public void onFailure(Call<CricketMatchResponse> call, Throwable t) {
                         progressBar.setVisibility(View.GONE);
                         tvEmpty.setVisibility(View.VISIBLE);
+                        btnRetry.setVisibility(View.VISIBLE);
                         tvEmpty.setText("Network Error: " + t.getMessage());
                         Log.e("HOME_FRAGMENT", "Error: " + t.getMessage());
                     }
