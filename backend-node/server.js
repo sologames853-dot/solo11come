@@ -89,7 +89,10 @@ const MatchSchema = new mongoose.Schema({
     venue: String,
     date: String,
     teamInfo: Array,
-    active: { type: Boolean, default: true }
+    active: { type: Boolean, default: true },
+    matchStarted: { type: Boolean, default: false },
+    matchEnded: { type: Boolean, default: false },
+    score: String
 });
 const Match = mongoose.model('Match', MatchSchema);
 
@@ -133,45 +136,44 @@ app.get('/admin/contests-list', async (req, res) => {
 app.post('/admin/sync-matches', async (req, res) => {
     try {
         const apiKey = process.env.CRICKET_API_KEY || '5f93b276-c5ab-455c-8dd2-198904909842';
-        console.log("Admin Syncing Matches...");
+        console.log("Admin Syncing Matches using cricScore...");
 
-        // 1. Fetch Live/Recent Matches
-        const liveRes = await axios.get(`https://api.cricapi.com/v1/currentMatches?apikey=${apiKey}&offset=0`);
-        const liveMatches = liveRes.data.data || [];
-
-        // 2. Fetch Upcoming Matches (Fixtures)
-        const upcomingRes = await axios.get(`https://api.cricapi.com/v1/matches?apikey=${apiKey}&offset=0`);
-        const upcomingMatches = upcomingRes.data.data || [];
-
-        // Combine both
-        const allMatches = [...liveMatches, ...upcomingMatches];
+        // Using cricScore endpoint for a single comprehensive feed
+        const response = await axios.get(`https://api.cricapi.com/v1/cricScore?apikey=${apiKey}`);
+        const allMatches = response.data.data || [];
 
         let count = 0;
-        const processedIds = new Set();
-
         for (let m of allMatches) {
-            if (!m.id || processedIds.has(m.id)) continue;
-            processedIds.add(m.id);
+            if (!m.id) continue;
 
-            // Filter out very old matches if they have "result" status and are not recent
-            // But for now, let's sync all and let admin control visibility
+            // Map matchState (ms) to our matchStarted/matchEnded flags
+            let started = false;
+            let ended = false;
+            if (m.ms === 'live') started = true;
+            if (m.ms === 'result') { started = true; ended = true; }
 
             await Match.findOneAndUpdate(
                 { id: m.id },
                 {
-                    name: m.name,
+                    name: m.series || `${m.t1} vs ${m.t2}`,
                     status: m.status,
-                    venue: m.venue,
-                    date: m.dateTimeGMT || m.date,
-                    teamInfo: m.teamInfo || [],
+                    venue: m.venue || 'TBA',
+                    date: m.dateTimeGMT,
+                    teamInfo: [
+                        { name: m.t1, shortname: m.t1, img: m.t1img || '' },
+                        { name: m.t2, shortname: m.t2, img: m.t2img || '' }
+                    ],
+                    matchStarted: started,
+                    matchEnded: ended,
+                    score: `${m.t1s} vs ${m.t2s}`.trim()
                 },
                 { upsert: true }
             );
             count++;
         }
 
-        console.log(`Sync Completed. Processed ${count} matches.`);
-        res.json({ status: 'success', message: `Successfully synced ${count} matches from Live and Upcoming feeds.` });
+        console.log(`Sync Completed. Processed ${count} matches from cricScore.`);
+        res.json({ status: 'success', message: `Successfully synced ${count} matches.` });
     } catch (err) {
         console.error("Sync Error:", err.message);
         res.status(500).json({ status: 'error', error: err.message });
@@ -319,7 +321,7 @@ app.post('/updateWallet', async (req, res) => {
     }
 });
 
-// 5. Fetch Matches for App (Serving from DB for performance and control)
+// 5. Fetch Matches for App
 app.get('/api/matches', async (req, res) => {
     try {
         // Return active matches, sorted by date (newest first)

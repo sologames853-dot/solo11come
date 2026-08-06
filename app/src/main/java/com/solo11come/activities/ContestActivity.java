@@ -10,7 +10,6 @@ import com.solo11come.adapters.ContestAdapter;
 import com.solo11come.models.Contest;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.solo11come.api.ApiClient;
 import com.solo11come.models.ContestResponse;
 import retrofit2.Call;
@@ -59,9 +58,6 @@ public class ContestActivity extends AppCompatActivity {
                     contestList.clear();
                     contestList.addAll(response.body().getData());
                     adapter.notifyDataSetChanged();
-                    if (contestList.isEmpty()) {
-                        loadDummyContests();
-                    }
                 } else {
                     loadDummyContests();
                 }
@@ -70,7 +66,6 @@ public class ContestActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ContestResponse> call, Throwable t) {
                 loadDummyContests();
-                Toast.makeText(ContestActivity.this, "Loading dummy contests (Offline)", Toast.LENGTH_SHORT).show();
             }
         });
     }

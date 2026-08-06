@@ -8,12 +8,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.solo11come.R;
-import com.solo11come.api.ApiClient;
 import com.solo11come.adapters.CaptainAdapter;
 import com.solo11come.models.Player;
 import com.solo11come.models.UserTeam;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.solo11come.api.ApiClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -83,22 +84,14 @@ public class CaptainSelectionActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    // Mark first team as done
-                    getSharedPreferences("Solo11", MODE_PRIVATE).edit().putBoolean("isFirstTeam", false).apply();
-
                     Toast.makeText(CaptainSelectionActivity.this, "Team Saved Successfully!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(CaptainSelectionActivity.this, HomeActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
                     finish();
-                } else {
-                    Toast.makeText(CaptainSelectionActivity.this, "Failed to save team: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(CaptainSelectionActivity.this, "Server Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CaptainSelectionActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

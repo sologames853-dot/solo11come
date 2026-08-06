@@ -9,12 +9,6 @@ import com.solo11come.models.UserTeam;
 import com.solo11come.utils.MatchPointsCalculator;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.solo11come.api.ApiClient;
-import com.solo11come.models.LeaderboardResponse;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import android.widget.Toast;
 
 public class LeaderboardActivity extends AppCompatActivity {
@@ -37,20 +31,7 @@ public class LeaderboardActivity extends AppCompatActivity {
     }
 
     private void fetchLeaderboard() {
-        ApiClient.getInterface().getLeaderboard(contestId).enqueue(new Callback<LeaderboardResponse>() {
-            @Override
-            public void onResponse(Call<LeaderboardResponse> call, Response<LeaderboardResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    // Logic to find user's team in rankings
-                    Toast.makeText(LeaderboardActivity.this, "Rankings Updated", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<LeaderboardResponse> call, Throwable t) {
-                Toast.makeText(LeaderboardActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // API Call Removed
     }
 
     private void simulatePointsCalculation() {

@@ -6,10 +6,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.solo11come.R;
-import com.solo11come.api.ApiClient;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import java.util.HashMap;
 import java.util.Map;
 

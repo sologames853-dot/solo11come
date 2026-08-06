@@ -91,7 +91,6 @@ public class TeamSelectionActivity extends AppCompatActivity implements PlayerAd
                                 fetchPlayingXI();
                                 adapter.notifyDataSetChanged();
                             } else {
-                                Log.d("SQUAD_FETCH", "No squad data from API, loading dummy players");
                                 loadDummyPlayers();
                             }
                         } else {
@@ -101,7 +100,6 @@ public class TeamSelectionActivity extends AppCompatActivity implements PlayerAd
 
                     @Override
                     public void onFailure(Call<CricketSquadResponse> call, Throwable t) {
-                        Log.e("SQUAD_FETCH", "Error: " + t.getMessage());
                         loadDummyPlayers();
                     }
                 });
@@ -136,9 +134,7 @@ public class TeamSelectionActivity extends AppCompatActivity implements PlayerAd
                     }
 
                     @Override
-                    public void onFailure(Call<CricketMatchXIResponse> call, Throwable t) {
-                        Log.e("XI_FETCH", "Error fetching XI: " + t.getMessage());
-                    }
+                    public void onFailure(Call<CricketMatchXIResponse> call, Throwable t) {}
                 });
     }
 

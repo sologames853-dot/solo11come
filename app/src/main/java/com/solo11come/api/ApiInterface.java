@@ -1,9 +1,8 @@
 package com.solo11come.api;
 
-import com.solo11come.models.Match;
+import com.solo11come.models.CricketMatchResponse;
 import com.solo11come.models.User;
 import com.solo11come.models.UserTeam;
-import com.solo11come.models.CricketMatchResponse;
 import com.solo11come.models.ContestResponse;
 import com.solo11come.models.JoinRequest;
 import com.solo11come.models.JoinResponse;
@@ -11,7 +10,6 @@ import com.solo11come.models.LeaderboardResponse;
 import com.solo11come.models.DepositRequest;
 import com.solo11come.models.UserContestResponse;
 import com.solo11come.models.TransactionResponse;
-import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;

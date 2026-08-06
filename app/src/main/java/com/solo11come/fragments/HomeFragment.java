@@ -26,7 +26,6 @@ import com.solo11come.activities.LeaderboardActivity;
 import com.solo11come.api.ApiClient;
 import com.solo11come.models.CricketMatch;
 import com.solo11come.models.CricketMatchResponse;
-import com.solo11come.utils.Constants;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -137,12 +136,8 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
                     com.solo11come.models.User user = response.body();
                     if ("APPROVED".equals(user.getKycStatus())) {
                         tvAdminAlert.setVisibility(View.VISIBLE);
-                        tvAdminAlert.setText("✔ Your KYC is APPROVED! You can now withdraw winnings.");
+                        tvAdminAlert.setText("✔ Your KYC is APPROVED!");
                         tvAdminAlert.setBackgroundColor(android.graphics.Color.parseColor("#4CAF50"));
-                    } else if ("REJECTED".equals(user.getKycStatus())) {
-                        tvAdminAlert.setVisibility(View.VISIBLE);
-                        tvAdminAlert.setText("✘ KYC REJECTED: Please re-upload valid documents.");
-                        tvAdminAlert.setBackgroundColor(android.graphics.Color.parseColor("#D32F2F"));
                     }
                 }
             }
@@ -153,81 +148,52 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
     }
 
     private void fetchMatches() {
-        if (getContext() == null || !com.solo11come.utils.NetworkUtils.isNetworkAvailable(getContext())) {
-            progressBar.setVisibility(View.GONE);
-            tvEmpty.setVisibility(View.VISIBLE);
-            btnRetry.setVisibility(View.VISIBLE);
-            tvEmpty.setText("No internet connection. Please check your network.");
-            return;
-        }
-
         progressBar.setVisibility(View.VISIBLE);
-        tvEmpty.setVisibility(View.GONE);
-        btnRetry.setVisibility(View.GONE);
-
-        ApiClient.getInterface().getBackendMatches()
-                .enqueue(new Callback<CricketMatchResponse>() {
-                    @Override
-                    public void onResponse(Call<CricketMatchResponse> call, Response<CricketMatchResponse> response) {
-                        progressBar.setVisibility(View.GONE);
-                        if (response.isSuccessful() && response.body() != null) {
-                            CricketMatchResponse matchResponse = response.body();
-                            List<CricketMatch> cricketMatches = matchResponse.getData();
-                            fullMatchList.clear();
-                            if (cricketMatches != null && !cricketMatches.isEmpty()) {
-                                for (CricketMatch cm : cricketMatches) {
-                                    Match m = new Match();
-                                    m.setId(cm.getId());
-                                    m.setName(cm.getName());
-                                    
-                                    // Map API booleans to our status
-                                    if (cm.isMatchEnded()) {
-                                        m.setStatus("result");
-                                    } else if (cm.isMatchStarted()) {
-                                        m.setStatus("started");
-                                    } else {
-                                        m.setStatus("upcoming");
-                                    }
-
-                                    m.setScore(cm.getStatus()); 
-
-                                    if (cm.getTeamInfo() != null && cm.getTeamInfo().size() >= 2) {
-                                        m.setTeam1(cm.getTeamInfo().get(0).getShortname());
-                                        m.setTeam2(cm.getTeamInfo().get(1).getShortname());
-                                        m.setTeam1Logo(cm.getTeamInfo().get(0).getImg());
-                                        m.setTeam2Logo(cm.getTeamInfo().get(1).getImg());
-                                    } else {
-                                        m.setTeam1("T1");
-                                        m.setTeam2("T2");
-                                    }
-                                    m.setMatchTime(cm.getDateTimeGMT() != null ? cm.getDateTimeGMT() : cm.getDate());
-                                    fullMatchList.add(m);
+        ApiClient.getInterface().getBackendMatches().enqueue(new Callback<CricketMatchResponse>() {
+            @Override
+            public void onResponse(Call<CricketMatchResponse> call, Response<CricketMatchResponse> response) {
+                progressBar.setVisibility(View.GONE);
+                if (response.isSuccessful() && response.body() != null) {
+                    List<CricketMatch> cricketMatches = response.body().getData();
+                    fullMatchList.clear();
+                    if (cricketMatches != null) {
+                        for (CricketMatch cm : cricketMatches) {
+                            Match m = new Match();
+                            m.setId(cm.getId());
+                            m.setName(cm.getName());
+                            m.setStatus(cm.isMatchEnded() ? "result" : (cm.isMatchStarted() ? "started" : "upcoming"));
+                            
+                            // Better Score Display
+                            String scoreStr = cm.getStatus();
+                            if (cm.getScore() != null && !cm.getScore().isEmpty()) {
+                                StringBuilder sb = new StringBuilder();
+                                for (CricketMatch.ScoreSummary ss : cm.getScore()) {
+                                    sb.append(ss.getInning()).append(": ").append(ss.getRuns()).append("/").append(ss.getWickets()).append(" (").append(ss.getOvers()).append(")\n");
                                 }
-                                filterMatches(tabLayout.getSelectedTabPosition());
-                            } else {
-                                tvEmpty.setVisibility(View.VISIBLE);
-                                btnRetry.setVisibility(View.VISIBLE);
-                                tvEmpty.setText("No matches available.");
+                                scoreStr = sb.toString().trim();
                             }
-                        } else {
-                            if (getContext() != null) {
-                                Toast.makeText(getContext(), "Failed to load matches", Toast.LENGTH_SHORT).show();
+                            m.setScore(scoreStr);
+                            
+                            if (cm.getTeamInfo() != null && cm.getTeamInfo().size() >= 2) {
+                                m.setTeam1(cm.getTeamInfo().get(0).getShortname());
+                                m.setTeam2(cm.getTeamInfo().get(1).getShortname());
+                                m.setTeam1Logo(cm.getTeamInfo().get(0).getImg());
+                                m.setTeam2Logo(cm.getTeamInfo().get(1).getImg());
                             }
-                            tvEmpty.setVisibility(View.VISIBLE);
-                            btnRetry.setVisibility(View.VISIBLE);
-                            tvEmpty.setText("Failed to load matches");
+                            m.setMatchTime(cm.getDateTimeGMT());
+                            fullMatchList.add(m);
                         }
+                        filterMatches(tabLayout.getSelectedTabPosition());
                     }
+                }
+            }
 
-                    @Override
-                    public void onFailure(Call<CricketMatchResponse> call, Throwable t) {
-                        progressBar.setVisibility(View.GONE);
-                        tvEmpty.setVisibility(View.VISIBLE);
-                        btnRetry.setVisibility(View.VISIBLE);
-                        tvEmpty.setText("Network Error: " + t.getMessage());
-                        Log.e("HOME_FRAGMENT", "Error: " + t.getMessage());
-                    }
-                });
+            @Override
+            public void onFailure(Call<CricketMatchResponse> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

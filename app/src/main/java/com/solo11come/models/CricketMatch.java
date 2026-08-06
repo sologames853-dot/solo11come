@@ -20,20 +20,16 @@ public class CricketMatch {
     private String dateTimeGMT;
     @SerializedName("teamInfo")
     private List<TeamInfo> teamInfo;
-    
-    public String getDateTimeGMT() { return dateTimeGMT; }
-    public boolean isMatchStarted() { return matchStarted; }
-    public boolean isMatchEnded() { return matchEnded; }
     @SerializedName("matchStarted")
     private boolean matchStarted;
     @SerializedName("matchEnded")
     private boolean matchEnded;
+    @SerializedName("score")
+    private List<ScoreSummary> score;
     @SerializedName("tossWinner")
     private String tossWinner;
     @SerializedName("tossChoice")
     private String tossChoice;
-    @SerializedName("matchWinner")
-    private String matchWinner;
     @SerializedName("scorecard")
     private List<ScorecardInning> scorecard;
 
@@ -41,11 +37,14 @@ public class CricketMatch {
     public String getName() { return name; }
     public String getStatus() { return status; }
     public List<TeamInfo> getTeamInfo() { return teamInfo; }
+    public String getDate() { return date; }
+    public String getDateTimeGMT() { return dateTimeGMT; }
+    public boolean isMatchStarted() { return matchStarted; }
+    public boolean isMatchEnded() { return matchEnded; }
+    public List<ScoreSummary> getScore() { return score; }
+    public String getVenue() { return venue; }
     public String getTossWinner() { return tossWinner; }
     public String getTossChoice() { return tossChoice; }
-    public String getMatchWinner() { return matchWinner; }
-    public String getVenue() { return venue; }
-    public String getDate() { return date; }
     public List<ScorecardInning> getScorecard() { return scorecard; }
 
     public static class TeamInfo {
@@ -59,6 +58,22 @@ public class CricketMatch {
         public String getName() { return name; }
         public String getShortname() { return shortname; }
         public String getImg() { return img; }
+    }
+
+    public static class ScoreSummary {
+        @SerializedName("r")
+        private int runs;
+        @SerializedName("w")
+        private int wickets;
+        @SerializedName("o")
+        private double overs;
+        @SerializedName("inning")
+        private String inning;
+
+        public int getRuns() { return runs; }
+        public int getWickets() { return wickets; }
+        public double getOvers() { return overs; }
+        public String getInning() { return inning; }
     }
 
     public static class ScorecardInning {

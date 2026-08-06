@@ -13,11 +13,7 @@ import android.graphics.Color;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.solo11come.R;
-import com.solo11come.api.ApiClient;
 import com.solo11come.models.User;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class WalletActivity extends AppCompatActivity {
     private TextView tvBalance, tvKycStatus, tvRecentDepositStatus;
@@ -76,21 +72,7 @@ public class WalletActivity extends AppCompatActivity {
             double amount = Double.parseDouble(amtStr);
             String userId = getSharedPreferences("Solo11", MODE_PRIVATE).getString("userId", "guest");
             
-            com.solo11come.models.DepositRequest request = new com.solo11come.models.DepositRequest(userId, amount, utr);
-            ApiClient.getInterface().depositMoney(request).enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (response.isSuccessful()) {
-                        Toast.makeText(WalletActivity.this, "Deposit Request Sent! Approval takes 30-60 mins.", Toast.LENGTH_LONG).show();
-                        finish();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(WalletActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
-                }
-            });
+            // API Call Removed
         });
 
         btnRefer.setOnClickListener(v -> {
@@ -119,56 +101,10 @@ public class WalletActivity extends AppCompatActivity {
     }
 
     private void fetchWalletBalance() {
-        String userId = getSharedPreferences("Solo11", MODE_PRIVATE).getString("userId", "guest");
-        ApiClient.getInterface().getUserProfile(userId).enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    User user = response.body();
-                    tvBalance.setText("₹" + user.getBalance());
-                    
-                    // Set KYC Status
-                    String status = user.getKycStatus() != null ? user.getKycStatus() : "NOT SUBMITTED";
-                    tvKycStatus.setText("KYC: " + status);
-                    if (status.equals("APPROVED")) {
-                        tvKycStatus.setBackgroundColor(Color.parseColor("#C8E6C9"));
-                        tvKycStatus.setTextColor(Color.parseColor("#2E7D32"));
-                        btnWithdraw.setEnabled(true);
-                    } else if (status.equals("REJECTED")) {
-                        tvKycStatus.setBackgroundColor(Color.parseColor("#FFCDD2"));
-                        tvKycStatus.setTextColor(Color.parseColor("#C62828"));
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                Toast.makeText(WalletActivity.this, "Error fetching balance", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // API Call Removed
     }
 
     private void fetchRecentTransactions() {
-        String userId = getSharedPreferences("Solo11", MODE_PRIVATE).getString("userId", "guest");
-        ApiClient.getInterface().getTransactions(userId).enqueue(new Callback<com.solo11come.models.TransactionResponse>() {
-            @Override
-            public void onResponse(Call<com.solo11come.models.TransactionResponse> call, Response<com.solo11come.models.TransactionResponse> response) {
-                if (response.isSuccessful() && response.body() != null && !response.body().getData().isEmpty()) {
-                    com.solo11come.models.Transaction lastTxn = response.body().getData().get(0);
-                    tvRecentDepositStatus.setText("Last Deposit: " + lastTxn.getStatus());
-                    
-                    if (lastTxn.getStatus().equals("COMPLETED")) {
-                        tvRecentDepositStatus.setBackgroundColor(Color.parseColor("#C8E6C9"));
-                        tvRecentDepositStatus.setTextColor(Color.parseColor("#2E7D32"));
-                    } else if (lastTxn.getStatus().equals("PENDING")) {
-                        tvRecentDepositStatus.setBackgroundColor(Color.parseColor("#FFF9C4"));
-                        tvRecentDepositStatus.setTextColor(Color.parseColor("#FBC02D"));
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<com.solo11come.models.TransactionResponse> call, Throwable t) {}
-        });
+        // API Call Removed
     }
 }
