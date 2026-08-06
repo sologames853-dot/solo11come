@@ -26,6 +26,7 @@ import com.solo11come.activities.LeaderboardActivity;
 import com.solo11come.api.ApiClient;
 import com.solo11come.models.CricketMatch;
 import com.solo11come.models.CricketMatchResponse;
+import com.solo11come.utils.Constants;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -149,7 +150,7 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
 
     private void fetchMatches() {
         progressBar.setVisibility(View.VISIBLE);
-        ApiClient.getInterface().getBackendMatches().enqueue(new Callback<CricketMatchResponse>() {
+        ApiClient.getCricketInterface().getMatches(Constants.CRICKET_API_KEY, 0).enqueue(new Callback<CricketMatchResponse>() {
             @Override
             public void onResponse(Call<CricketMatchResponse> call, Response<CricketMatchResponse> response) {
                 progressBar.setVisibility(View.GONE);
@@ -165,10 +166,19 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
                             m.setMatchEnded(cm.isMatchEnded());
                             m.setHasSquad(cm.isHasSquad());
                             m.setFantasyEnabled(cm.isFantasyEnabled());
-                            m.setStatus(cm.isMatchEnded() ? "result" : (cm.isMatchStarted() ? "started" : "upcoming"));
+                            
+                            // Map CricAPI state to internal status string
+                            // status: upcoming | started | result
+                            if (cm.isMatchEnded()) {
+                                m.setStatus("result");
+                            } else if (cm.isMatchStarted()) {
+                                m.setStatus("started");
+                            } else {
+                                m.setStatus("upcoming");
+                            }
                             
                             // Better Score Display
-                            String scoreStr = cm.getStatus();
+                            String scoreStr = cm.getStatus(); // Default to "Match starts at..."
                             if (cm.getScore() != null && !cm.getScore().isEmpty()) {
                                 StringBuilder sb = new StringBuilder();
                                 for (CricketMatch.ScoreSummary ss : cm.getScore()) {
@@ -183,12 +193,19 @@ public class HomeFragment extends Fragment implements MatchAdapter.OnMatchClickL
                                 m.setTeam2(cm.getTeamInfo().get(1).getShortname());
                                 m.setTeam1Logo(cm.getTeamInfo().get(0).getImg());
                                 m.setTeam2Logo(cm.getTeamInfo().get(1).getImg());
+                            } else if (cm.getTeams() != null && cm.getTeams().size() >= 2) {
+                                // Fallback to basic team names if teamInfo is missing
+                                m.setTeam1(cm.getTeams().get(0));
+                                m.setTeam2(cm.getTeams().get(1));
                             }
+
                             m.setMatchTime(cm.getDateTimeGMT());
                             fullMatchList.add(m);
                         }
                         filterMatches(tabLayout.getSelectedTabPosition());
                     }
+                } else {
+                    Toast.makeText(getContext(), "Failed to load matches", Toast.LENGTH_SHORT).show();
                 }
             }
 
